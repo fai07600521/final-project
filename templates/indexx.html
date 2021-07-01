@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html style="font-size: 16px;">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="page_type" content="np-template-header-footer-from-plugin">
+    <title>Home</title>
+    <link rel="stylesheet" href="nicepage.css" media="screen">
+    <link rel="stylesheet" href="Home.css" media="screen">
+    <script class="u-script" type="text/javascript" src="jquery.js" defer=""></script>
+    <script class="u-script" type="text/javascript" src="nicepage.js" defer=""></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+    <meta name="generator" content="Nicepage 3.13.2, nicepage.com">
+    <link id="u-theme-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/home.css') }}">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/nicepage.css') }}">
+    <link rel= "u-script" type= "text/javascript" href= "{{ url_for('static',filename='js/jquery.js') }}">
+    <link rel= "u-script" type= "text/javascript" href= "{{ url_for('static',filename='js/nicepage.js') }}">
+    <script src="static/js/jquery.js"></script>
+    <script src="static/js/nicepage.js"></script>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script>
+        let globalStart = 0
+        const limit = 45
+        $('.ldld').show();
+        $('#bg').show();
+        $('#carousel_acf4').hide();
+        $(window).on("load", function() {
+
+          getImage()
+          $('#sec-d2d5').show();
+        })
+
+        async function getImage(){
+          const response = await fetch(`http://localhost:3300?type={{style}}&limit=${limit}&offset=${globalStart}`)
+          const datas = await response.json()
+          const imgContainer = $("#generated_image")
+          imgContainer.html(``)
+          for(data of datas){
+            const htmlString = `<div class="u-effect-fade u-effect-hover-zoom u-gallery-item">
+                <div class="u-back-slide">
+                  <img class="u-back-image u-expanded" src="data:image/png;base64, ${data.file}">
+                </div>
+                <div class="u-over-slide u-shading u-over-slide-1">
+                  <h3 class="u-gallery-heading"></h3>
+                  <p class="u-gallery-text"></p>
+                </div>
+              </div>`
+            imgContainer.append(htmlString)
+          }
+          globalStart = globalStart + limit
+        }
+
+        function Loadmore(){
+          getImage()
+        }
+   </script>
+    <script type="application/ld+json">{
+		"@context": "http://schema.org",
+		"@type": "Organization",
+		"name": "",
+		"url": "index.html",
+		"logo": "static\images\default-logo.png"
+}</script>
+    <meta property="og:title" content="Home">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#478ac9">
+    <link rel="canonical" href="index.html">
+    <meta property="og:url" content="index.html">
+    <style>
+      .ldld {
+        position: fixed;
+        z-index: 1;
+        display: flex;
+      }
+      .box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .box div {
+        width: 100px;
+        height: 100px;
+      }
+      #bg {
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      background-color: white;
+      z-index: 1;
+      /* Preserve aspet ratio */
+      min-width: 100%;
+      min-height: 100%;
+    }
+    </style>
+  </head>
+  <body data-home-page="Home.html" action="/" href=home data-home-page-title="Home" class="u-body"><header class="u-clearfix u-header u-header" id="sec-d2d5"><div class="u-clearfix u-sheet u-valign-middle u-sheet-1">
+   <!-- <div id="bg" class="box">
+    <img class="ldld" src="static\assets\imgs\loading.gif"> </div>
+        <a href="" class="u-image u-logo u-image-1"></a> -->
+          <img src="static\images\default-logo.png" class="u-logo-image u-logo-image-1" href="home.html">
+        </a>
+        <nav class="u-menu u-menu-dropdown u-offcanvas u-menu-1">
+          <div class="menu-collapse" style="font-size: 1rem; letter-spacing: 0px;">
+            <a class="u-button-style u-custom-left-right-menu-spacing u-custom-padding-b-+burger"></use></svg>
+              <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><symbol id="menu-hamburger" viewBox="0 0 16 16" style="width: 8px; height: 8px;"><rect y="1" width="16" height="2"></rect><rect y="7" width="16" height="2"></rect><rect y="13" width="16" height="2"></rect>
+</symbol>
+</defs></svg>
+            </a>
+          </div>
+          <div class="u-nav-container">
+           <div class="u-nav-container">
+            <ul class="u-nav u-unstyled u-nav-1"><li class="u-nav-item"><a class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base" href="/" style="padding: 10px 20px;">Home</a>
+</li></ul>
+          </div>
+          <div class="u-nav-container-collapse">
+          </div>
+          <div class="u-nav-container-collapse">
+            <div class="u-black u-container-style u-inner-container-layout u-opacity u-opacity-95 u-sidenav">
+              <div class="u-sidenav-overflow">
+                <div class="u-menu-close"></div>
+              
+              </div>
+            </div>
+            <div class="u-black u-menu-overlay u-opacity u-opacity-70"></div>
+          </div>
+        </nav>
+      </div></header>
+      <section class="u-align-center u-clearfix u-palette-1-dark-2 u-section-1" id="carousel_acf4">
+     
+        <div style = "top:40px" class="u-expanded-width u-gallery u-layout-grid u-lightbox u-show-text-on-hover u-gallery-1">
+          <div id="generated_image" class="u-gallery-inner u-gallery-inner-1">
+          </div>
+
+          
+        </div>
+
+
+        <a  style="margin-top: 70px" class="u-align-center u-btn u-button-style u-hover-white u-palette-3-base u-btn-1" onClick="Loadmore()">load more</a>
+      
+    </section>
+
+
+  </body>
+</html>
