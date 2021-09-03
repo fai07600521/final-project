@@ -6,20 +6,40 @@
 # distribution of this software and related documentation without an express
 # license agreement from NVIDIA CORPORATION is strictly prohibited.
 
+
+
+
 """Generate images using pretrained network pickle."""
 
 import os
+from pprint import pprint
 import re
 from typing import List, Optional
+import sys
+import traceback
 
-import click
+import pickle
 import dnnlib
 import numpy as np
 import PIL.Image
 import torch
+from io import BytesIO
+import mysql.connector
+import base64
+from PIL import Image
 
 import legacy
 CUDA_VISIBLE_DEVICES=0
+mydbCloud = mysql.connector.connect(
+        host="103.74.253.121",
+        user="root",
+        password="123456",
+        database="fask" # Name of the database
+)
+
+
+# Create a cursor object
+
 
 #----------------------------------------------------------------------------
 
@@ -35,45 +55,22 @@ def num_range(s: str) -> List[int]:
 
 #----------------------------------------------------------------------------
 
+
 def generate_images(
     network_pkl: r"C:\Users\Admin\temp\stylegan2-ada-pytorch\sexy\network-snapshot-000920.pkl",
     seeds:[10,2000,20000,200000],
     outdir: r"C:\Users\Admin\temp\stylegan2-ada-pytorch\sexy",
     projected_w: None,
-    class_idx: 1
-
+    class_idx: 1,
+    truncation_psi: 0.5,
+    noise_mode: 'const'
 ):
-    """Generate images using pretrained network pickle.
-
-    Examples:
-
-    \b
-    # Generate curated MetFaces images without truncation (Fig.10 left)
-    python generate.py --outdir=out --trunc=1 --seeds=85,265,297,849 \\
-        --network=https://nvlabs-fi-cdn.nvidia.com/stylegan2-ada-pytorch/pretrained/metfaces.pkl
-
-    \b
-    # Generate uncurated MetFaces images with truncation (Fig.12 upper left)
-    python generate.py --outdir=out --trunc=0.7 --seeds=600-605 \\
-        --network=https://nvlabs-fi-cdn.nvidia.com/stylegan2-ada-pytorch/pretrained/metfaces.pkl
-
-    \b
-    # Generate class conditional CIFAR-10 images (Fig.17 left, Car)
-    python generate.py --outdir=out --seeds=0-35 --class=1 \\
-        --network=https://nvlabs-fi-cdn.nvidia.com/stylegan2-ada-pytorch/pretrained/cifar10.pkl
-
-    \b
-    # Render an image from projected W
-    python generate.py --outdir=out --projected_w=projected_w.npz \\
-        --network=https://nvlabs-fi-cdn.nvidia.com/stylegan2-ada-pytorch/pretrained/metfaces.pkl
-    """
-
     print('Loading networks from "%s"...' % network_pkl)
-    device = torch.device('cuda')
+    device = torch.device('cpu')
     with dnnlib.util.open_url(network_pkl) as f:
-        G = legacy.load_network_pkl(f)['G_ema'].to(device) # type: ignore
+         G = legacy.load_network_pkl(f)['G_ema'].to(device) # type: ignore
 
-    os.makedirs(outdir, exist_ok=True)
+    '''os.makedirs(outdir, exist_ok=True)
 
     # Synthesize the result of a W projection.
     if projected_w is not None:
@@ -93,6 +90,7 @@ def generate_images(
         ctx.fail('--seeds option is required when not using --projected-w')
 
     # Labels.
+  
     label = torch.zeros([1, G.c_dim], device=device)
     if G.c_dim != 0:
         if class_idx is None:
@@ -100,15 +98,74 @@ def generate_images(
         label[:, class_idx] = 1
     else:
         if class_idx is not None:
-            print ('warn: --class=lbl ignored when running on an unconditional network')
+            print ('warn: --class=lbl ignored when running on an unconditional network')'''
 
     # Generate images.
+
+ 
+    i = 0
+    count = 1
+    outdir = r"D:\New folder (3)\folderImg\Data"
     for seed_idx, seed in enumerate(seeds):
-        print('Generating image for seed %d (%d/%d) ...' % (seed, seed_idx, len(seeds)))
-        z = torch.from_numpy(np.random.RandomState(seed).randn(1, G.z_dim)).to(device)
-        img = G(z, label, truncation_psi=1)
-        img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
-        PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'{outdir}/seed{seed:04d}.png')
+        try:
+            print('Generating image for seed %d (%d/%d) ...' % (seed, seed_idx, len(seeds)))
+            z = torch.from_numpy(np.random.RandomState(seed).randn(1, G.z_dim)).to(device)
+            c = None
+            w = G.mapping(z, c, truncation_psi=0.5, truncation_cutoff=8)
+            img = G.synthesis(w, noise_mode='const', force_fp32=True)
+            img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
+            print("fileList 3")
+            img2 = PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB')
+            img3 = PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'{outdir}/seed{seed:04d}.png')
+            print("fileList 4")
+            fileList = []
+            fileList.append(img2)       
+            print("fileList")
+            print(fileList)
+            if (count == 1) : 
+                    count = count + 1
+                    print(i == 0)
+                    cursor = mydbCloud.cursor()
+                    queryDelete = 'DELETE FROM classy'
+                    cursor.execute(queryDelete)
+                    mydbCloud.commit()
+
+            for	i in range(len(fileList)):
+
+                # Open a file in binary mode
+                buff = BytesIO()
+                fileList[i].save(buff, format="png")
+                img_str = base64.b64encode(buff.getvalue()).decode('utf-8')
+                pprint(img_str)
+                    # We must encode the file to get base64 string
+                    # Sample data to be inserted
+                args = (i,img_str, 'Sample Name')
+                    
+                    # Prepare a query
+                query = 'INSERT INTO classy(ID,file,name) VALUES(%s,%s, %s)'
+
+                    # Execute the query and commit the database.
+                cursor.execute(query,args)
+                mydbCloud.commit()
+        except AssertionError:
+                _, _, tb = sys.exc_info()
+                traceback.print_tb(tb) # Fixed format
+                tb_info = traceback.extract_tb(tb)
+                filename, line, func, text = tb_info[-1]
+
+                print('An error occurred on line {} in statement {}'.format(line, text))
+                exit(1)
+        
+        
+def getData():
+    if (count == 1) : 
+                    count = count + 1
+                    print(i == 0)
+                    cursor = mydbCloud.cursor()
+                    queryDelete = 'DELETE FROM classy'
+                    cursor.execute(queryDelete)
+                    mydbCloud.commit()
+
 
 
 #----------------------------------------------------------------------------

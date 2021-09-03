@@ -13,15 +13,16 @@
     <script class="u-script" type="text/javascript" src="nicepage.js" defer=""></script>
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
     <meta name="generator" content="Nicepage 3.13.2, nicepage.com">
+    <link rel= "stylesheet" href= "static/styles/loader.css">
     <link id="u-theme-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i">
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/home.css') }}">
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/nicepage.css') }}">
     <link rel= "u-script" type= "text/javascript" href= "{{ url_for('static',filename='js/jquery.js') }}">
     <link rel= "u-script" type= "text/javascript" href= "{{ url_for('static',filename='js/nicepage.js') }}">
+    <link rel="stylesheet" href="static\assets\asset\css\main.css" />
+		<noscript><link rel="stylesheet" href="static\assets\asset\css\noscript.css" /></noscript>
     <script src="static/js/jquery.js"></script>
     <script src="static/js/nicepage.js"></script>
-
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
         <script>
         let globalStart = 0
@@ -29,34 +30,58 @@
         $('.ldld').show();
         $('#bg').show();
         $('#carousel_acf4').hide();
-        $(window).on("load", function() {
-
-          getImage()
+        $(window).on("load", async () => {
+          await getImage()
           $('#sec-d2d5').show();
+          hideLoading()
         })
 
         async function getImage(){
-          const response = await fetch(`http://localhost:3300?type={{style}}&limit=${limit}&offset=${globalStart}`)
-          const datas = await response.json()
-          const imgContainer = $("#generated_image")
-          imgContainer.html(``)
-          for(data of datas){
-            const htmlString = `<div class="u-effect-fade u-effect-hover-zoom u-gallery-item">
-                <div class="u-back-slide">
-                  <img class="u-back-image u-expanded" src="data:image/png;base64, ${data.file}">
-                </div>
-                <div class="u-over-slide u-shading u-over-slide-1">
-                  <h3 class="u-gallery-heading"></h3>
-                  <p class="u-gallery-text"></p>
-                </div>
-              </div>`
-            imgContainer.append(htmlString)
+          try {
+            const response = await fetch(`http://103.74.253.121:3000?type=classy&limit=${limit}&offset=${globalStart}`)
+            const datas = await response.json()
+            const imgContainer = $("#generated_image")
+            imgContainer.html(``)
+            for(data of datas){
+              const htmlString = `<div id="main" class="u-effect-fade u-effect-hover-zoom u-gallery-item">
+                  <div class="u-back-slide">
+                    <img class="u-back-image u-expanded" src="data:image/png;base64, ${data.file}">
+                  </div>
+                  <div class="u-over-slide u-shading u-over-slide-1">
+                    <h3 class="u-gallery-heading"></h3>
+                    <p class="u-gallery-text"></p>
+                  </div>
+                </div>`
+              imgContainer.append(htmlString)
+            }
+            globalStart = globalStart + limit
+          } catch(err) {
+            console.log(err.message)
           }
-          globalStart = globalStart + limit
         }
 
-        function Loadmore(){
-          getImage()
+        async function Loadmore(){
+          //showLoading()
+          await getImage()
+         // hideLoading()
+        }
+
+        function showLoading() {
+          console.log("showLoding")
+          $("#loading").show()
+          $("#sec-d2d5").hide()
+          $("#carousel_acf4").hide()
+          $("#menuBar").hide()
+        }
+
+        function hideLoading() {
+          console.log("hideLoding")
+          setTimeout(() => {
+            $("#loading").hide()
+            $("#sec-d2d5").show()
+            $("#carousel_acf4").show()
+            $("#menuBar").show()
+          }, 500)
         }
    </script>
     <script type="application/ld+json">{
@@ -98,53 +123,82 @@
       min-height: 100%;
     }
     </style>
+    <style>
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding-top: 30px;
+  overflow: hidden;
+  background-color: #333;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+li a:hover:not(.active) {
+  background-color: #111;
+}
+
+.active {
+  background-color: #04AA6D;
+}
+</style>
+				<!-- Main -->
   </head>
-  <body data-home-page="Home.html" action="/" href=home data-home-page-title="Home" class="u-body"><header class="u-clearfix u-header u-header" id="sec-d2d5"><div class="u-clearfix u-sheet u-valign-middle u-sheet-1">
-   <!-- <div id="bg" class="box">
-    <img class="ldld" src="static\assets\imgs\loading.gif"> </div>
-        <a href="" class="u-image u-logo u-image-1"></a> -->
-          <img src="static\images\default-logo.png" class="u-logo-image u-logo-image-1" href="home.html">
-        </a>
-        <nav class="u-menu u-menu-dropdown u-offcanvas u-menu-1">
-          <div class="menu-collapse" style="font-size: 1rem; letter-spacing: 0px;">
-            <a class="u-button-style u-custom-left-right-menu-spacing u-custom-padding-b-+burger"></use></svg>
-              <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><symbol id="menu-hamburger" viewBox="0 0 16 16" style="width: 8px; height: 8px;"><rect y="1" width="16" height="2"></rect><rect y="7" width="16" height="2"></rect><rect y="13" width="16" height="2"></rect>
-</symbol>
-</defs></svg>
-            </a>
-          </div>
-          <div class="u-nav-container">
-           <div class="u-nav-container">
-            <ul class="u-nav u-unstyled u-nav-1"><li class="u-nav-item"><a class="u-button-style u-nav-link u-text-active-palette-1-base u-text-hover-palette-2-base" href="/" style="padding: 10px 20px;">Home</a>
-</li></ul>
-          </div>
-          <div class="u-nav-container-collapse">
-          </div>
-          <div class="u-nav-container-collapse">
-            <div class="u-black u-container-style u-inner-container-layout u-opacity u-opacity-95 u-sidenav">
-              <div class="u-sidenav-overflow">
-                <div class="u-menu-close"></div>
-              
-              </div>
-            </div>
-            <div class="u-black u-menu-overlay u-opacity u-opacity-70"></div>
-          </div>
-        </nav>
-      </div></header>
+  <body id="menuBar" data-home-page="Home.html" action="/" href=home data-home-page-title="Home" class="u-body"><ul>
+  <li><button class="active" onclick="location.href = '/'">Home</button></li>
+  <li><button onclick="location.href = '/mixingStyle'">Mixing Street</button></li>
+  <li><button href="#contact">Contact</button></li>
+  <li><button href="#about">About</button></li>
+</ul>
+      <div id="loading" style="background-color: #425465">
+      <center><br><br><br>
+      <div class="loader" id="loader"></div>
+      <div class="loader" id="loader2"></div>
+      <div class="loader" id="loader3"></div>
+      <div class="loader" id="loader4"></div>
+        <!--Delete the "loader3" and "loader4" divs for a 2-layer loader-->
+        <!--You can also change the animation durations or delays, that looks also pretty cool -->
+      <span id="text">GENERATING...</span><br>
+      </div>
       <section class="u-align-center u-clearfix u-palette-1-dark-2 u-section-1" id="carousel_acf4">
      
         <div style = "top:40px" class="u-expanded-width u-gallery u-layout-grid u-lightbox u-show-text-on-hover u-gallery-1">
           <div id="generated_image" class="u-gallery-inner u-gallery-inner-1">
+
           </div>
 
           
         </div>
 
+</br>
+</br>
+</br>
+</br>
+				<form method ="post" action="/generated" href=home>
+								<button type="submit" name={{style}} value={{style}} class="btn btn-primary" data-dismiss="modal" onClick="Loadmore()">
+						<!-- <i class="fas fa-times fa-fw"></i> -->
+								GENERART MORE
+							 </button>
+					     </form> 
 
-        <a  style="margin-top: 70px" class="u-align-center u-btn u-button-style u-hover-white u-palette-3-base u-btn-1" onClick="Loadmore()">load more</a>
-      
-    </section>
-
-
+<script>
+			</script>
+		<script src="static\assets\asset\js\jquery.min.js"></script>
+			<script src="static\assets\asset\js\browser.min.js"></script>
+			<script src="static\assets\asset\js\breakpoints.min.js"></script>
+			<script src="static\assets\asset\js\util.js"></script>
+			<script src="static\assets\asset\js\main.js"></script>
   </body>
 </html>
+
+

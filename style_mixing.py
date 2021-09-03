@@ -17,7 +17,9 @@ import dnnlib
 import numpy as np
 import PIL.Image
 import torch
-
+from io import BytesIO
+import mysql.connector
+import base64
 import legacy
 
 #----------------------------------------------------------------------------
@@ -79,6 +81,14 @@ def generate_style_mix(
     all_images = (all_images.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8).cpu().numpy()
     image_dict = {(seed, seed): image for seed, image in zip(all_seeds, list(all_images))}
 
+    mydbCloud = mysql.connector.connect(
+            host="103.74.253.121",
+            user="root",
+            password="123456",
+            database="fask" # Name of the database
+    )
+    i = 0
+    count = 1
     print('Generating style-mixed images...')
     for row_seed in row_seeds:
         for col_seed in col_seeds:
@@ -91,7 +101,39 @@ def generate_style_mix(
     print('Saving images...')
     os.makedirs(outdir, exist_ok=True)
     for (row_seed, col_seed), image in image_dict.items():
-        PIL.Image.fromarray(image, 'RGB').save(f'{outdir}/{row_seed}-{col_seed}.png')
+        img2 = PIL.Image.fromarray(image, 'RGB')
+        fileList = []
+        fileList.append(img2)
+        print("fileList")
+        print(fileList)
+        
+        if (count == 1) : 
+                count = count + 1
+                print(i == 0)
+                cursor = mydbCloud.cursor()
+                queryDelete = 'DELETE FROM classy'
+                cursor.execute(queryDelete)
+                mydbCloud.commit()
+
+        for	i in range(len(fileList)):
+
+            # Open a file in binary mode
+            buff = BytesIO()
+            fileList[i].save(buff, format="png")
+            img_str = base64.b64encode(buff.getvalue()).decode('utf-8')
+                # We must encode the file to get base64 string
+                # Sample data to be inserted
+            args = (i,img_str, 'Sample Name')
+                
+                # Prepare a query
+            query = 'INSERT INTO classy(ID,file,name) VALUES(%s,%s, %s)'
+
+                # Execute the query and commit the database.
+            cursor.execute(query,args)
+            mydbCloud.commit()
+
+
+
 
     print('Saving image grid...')
     W = G.img_resolution
@@ -113,6 +155,8 @@ def generate_style_mix(
 #----------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    generate_style_mix() # pylint: disable=no-value-for-parameter
+    generate_style_mix(
+        r"D:\New folder (3)\picker-files\minimal\network-snapshot-002145.pkl"
+    ) # pylint: disable=no-value-for-parameter
 
 #----------------------------------------------------------------------------
