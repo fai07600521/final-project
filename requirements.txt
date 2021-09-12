@@ -1,16 +1,16 @@
-brotlipy               0.7.0
-certifi                2021.5.30
-cffi                   1.14.6
-chardet                4.0.0
-click                  8.0.1
-colorama               0.4.4
-cryptography           3.4.7
-dill                   0.3.4
-dnspython              2.1.0
-Flask                  1.1.2
-Flask-MySQLdb          0.2.0
-GPUtil                 1.4.0
-idna                   2.10
+brotlipy-0.7.0
+certifi-2021.5.30
+cffi-1.14.6
+chardet-4.0.0
+click-8.0.1
+colorama-0.4.4
+cryptography-3.4.7
+dill-0.3.4
+dnspython-2.1.0
+Flask-1.1.2
+Flask-MySQLdb-0.2.0
+GPUtil-1.4.0
+idna-2.10
 imageio-ffmpeg-0.4.3
 importlib-metadata-3.10.0
 itsdangerous-2.0.1
