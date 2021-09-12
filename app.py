@@ -1,6 +1,5 @@
 # Import libraries
 from pprint import pprint
-import numpy as np
 from flask import Flask, request, jsonify, render_template,redirect
 import dnnlib
 import pickle
@@ -14,7 +13,7 @@ from style_mixing import generate_style_mix
 import base64
 import glob
 from pprint import pprint
-import random
+import joblib
 
 app = Flask(__name__)
  
@@ -78,7 +77,11 @@ def generated(name=None):
          if request.form.get("classy"):
                     pprint("classyyyyy")
                     network_pkl = r"D:\New folder (3)\picker-files\classy\network-snapshot-001370.pkl"
-                    generate_img(network_pkl)
+                    file = open("./network-snapshot-001370.pkl","rb")
+                    #load trained model
+                    trained_model = joblib.load(file)
+                    pprint(trained_model)
+                    generate_img(trained_model)
                     return render_template('indexx.html',style=request.form.get("classy")) 
          elif request.form.get("faminine"):
                     pprint("faminineeeee")
@@ -105,6 +108,8 @@ def generated(name=None):
                     network_pkl = r"D:\New folder (3)\picker-files\sexy\network-snapshot-003556.pkl"
                     generate_img(network_pkl)
                     return render_template('indexx.html',style=request.form.get("sexy")) 
+
+
      
 def generate_img(network_pkl):
     randomlist = []
@@ -137,7 +142,6 @@ def generate_mixstyle_img(network_pkl):
     )
 
 
-        
 
 if __name__ == '__main__':
     app.run(threaded=False, debug=False, host='127.0.0.1', port=5000)
